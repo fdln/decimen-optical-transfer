@@ -28,6 +28,10 @@
           <div class="hint status-line" id="stats" data-i18n="receive.statusReady">Ready to scan a file or text stream</div>
         </div>
         <button id="start" data-i18n="receive.startCamera">Start camera</button>
+        <!-- Shown by main.ts only where a screen can be captured (desktop
+             engines with getDisplayMedia): the sender is then a window on
+             this same machine, or a video call, rather than a second device. -->
+        <button id="start-screen" class="secondary-button" type="button" hidden data-i18n="receive.startScreen">Scan screen</button>
         <!-- The zone exists so the toast can hang just above the camera box:
              .preview clips its children (overflow: hidden), this doesn't. -->
         <div class="preview-zone" id="preview" style="display: none">

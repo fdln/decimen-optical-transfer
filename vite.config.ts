@@ -41,6 +41,7 @@ const SITE_URL = process.env.VITE_SITE_URL ?? "https://decimen.app/";
 //   demo                sender locked to the bundled payloads
 //   standalone-send     one self-contained decimen-sender.html
 //   standalone-receive  one self-contained decimen-receiver.html
+//   tauri               the site for the desktop shell (src-tauri/) → dist-tauri/
 //
 // The plugins live in build/, one file each.
 
@@ -150,12 +151,26 @@ export default defineConfig(({ mode }) => {
     };
   }
 
+  // The desktop shell (Tauri, src-tauri/) loads the same three pages and every
+  // locale tree, minus the two things that only make sense for a hosted site:
+  //
+  // - No service worker. The app is its own offline copy, and a precache
+  //   inside a webview outlives an app update — the new bundle would sit on
+  //   disk behind the old worker's cache. (Received media falls back to the
+  //   blob: URL path servableMediaUrl already has for an uncontrolled page.)
+  // - No self-signed HTTPS. The webview refuses the certificate outright, and
+  //   it loads the dev server from localhost, which is a secure context on
+  //   plain http — the camera works without it.
+  const tauri = mode === "tauri";
+
   return {
     base: "./",
+    // The Rust build prints here too; vite clearing the screen would eat it.
+    clearScreen: tauri ? false : undefined,
     plugins: [
       htmlTokens(TOKENS),
-      basicSsl(),
-      VitePWA({
+      !tauri && basicSsl(),
+      !tauri && VitePWA({
         registerType: "autoUpdate",
         // We inject our own registration — see rootPwaHead().
         injectRegister: false,
@@ -199,7 +214,7 @@ export default defineConfig(({ mode }) => {
           ],
         },
       }),
-      rootPwaHead(),
+      !tauri && rootPwaHead(),
       // After rootPwaHead so the locale copies see the final SW registration
       // and manifest link; emits in writeBundle, before the SW precache glob.
       i18nPages({ siteUrl: SITE_URL, tokens: TOKENS, manifest: MANIFEST_BASE }),
@@ -209,6 +224,7 @@ export default defineConfig(({ mode }) => {
     build: {
       // Same ES2022/top-level-await floor as the standalone build above.
       target: "es2022",
+      outDir: tauri ? "dist-tauri" : "dist",
       rollupOptions: {
         input: {
           index: resolve(__dirname, "index.html"),
@@ -219,7 +235,9 @@ export default defineConfig(({ mode }) => {
     },
     // host: true on both so a phone on the LAN can reach either the dev server
     // or the built bundle that `npm run serve` previews.
-    server: { host: true },
+    // The shell's devUrl is fixed, so its dev server must not wander to another
+    // port, and nothing off this machine needs to reach it.
+    server: tauri ? { host: "localhost", port: 5173, strictPort: true } : { host: true },
     preview: { host: true },
   };
 });

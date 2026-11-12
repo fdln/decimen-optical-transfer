@@ -185,6 +185,14 @@ export const messages: Messages = {
     errCameraGone:
       "that camera is no longer available — set camera back to auto and tap Start camera.",
     errCamera: (message) => `camera: ${message}`,
+    startScreen: "Scan screen",
+    errScreenDenied:
+      "screen capture was not allowed — pick a window or screen (and allow screen recording if asked), then try again.",
+    errScreen: (message) => `screen: ${message}`,
+    screenEnded: "screen capture stopped — start again to continue.",
+    screenSearching: (resolution) => `screen ${resolution} — searching for a stream…`,
+    screenActual: (resolution, fps, workers) =>
+      `screen ${resolution} @ ${fps} fps · decode workers: ${workers}`,
     errRestartFailed: "camera: could not restart after the switch — tap Start camera.",
     errLiveChangeRefused: "this camera refused a live change — restart to apply",
     cameraRefusedKeptPrevious: "that camera refused to start — kept the previous one",

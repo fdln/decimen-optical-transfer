@@ -15,6 +15,8 @@ npm run build             # typecheck (app + node configs), hosted site → dist
 npm run build:standalone  # both self-contained pages → dist-standalone/
 npm run build:all         # everything
 npm run icons             # regenerate public/ icons from the logo (needs librsvg)
+npm run build:tauri       # the site for the desktop shell → dist-tauri/ (no PWA) — see desktop.md
+npm run tauri build       # the desktop app bundle (needs Rust) — see desktop.md
 ```
 
 `npm run icons` strips the logo SVG's comments before rasterizing (a `--` inside a comment is invalid XML that browsers tolerate but librsvg rejects) and does exact-match surgery on the markup, throwing if the logo changes shape.
@@ -30,6 +32,7 @@ npm run icons             # regenerate public/ icons from the logo (needs librsv
 - **`ci.yml`** — tests and builds on every push to `main` / `release/*` and every PR. Asserts the served `receive` chunk stays under 20 KB (catches the inlined worker/wasm leaking into the site build) and that manifest/SW references point at files that exist.
 - **`pages.yml`** — deploys to GitHub Pages on every push to `main`.
 - **`release.yml`** — on a `v*` tag: builds everything, attaches `decimen-<tag>-site.zip`, both standalone files, and `SHA256SUMS.txt`.
+- **`desktop-windows.yml`** — on a push touching `src-tauri/`, or on demand: builds the desktop shell's Windows installer and keeps it as a workflow artifact. Build-only, not attached to releases — see [Desktop app](desktop.md#windows-installer).
 
 The site builds with `base: "./"`, so it works under a project subpath with no configuration.
 

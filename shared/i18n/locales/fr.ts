@@ -196,6 +196,14 @@ export const messages: Messages = {
       "cette caméra n’est plus disponible — remettez caméra sur auto et appuyez sur " +
       "Démarrer la caméra.",
     errCamera: (message) => `caméra : ${message}`,
+    startScreen: "Scanner l’écran",
+    errScreenDenied:
+      "la capture d’écran n’a pas été autorisée — choisissez une fenêtre ou un écran (et autorisez l’enregistrement de l’écran si demandé), puis réessayez.",
+    errScreen: (message) => `écran : ${message}`,
+    screenEnded: "la capture d’écran s’est arrêtée — relancez-la pour continuer.",
+    screenSearching: (resolution) => `écran ${resolution} — recherche d’un flux…`,
+    screenActual: (resolution, fps, workers) =>
+      `écran ${resolution} à ${fps} i/s · workers de décodage : ${workers}`,
     errRestartFailed:
       "caméra : redémarrage impossible après le changement — appuyez sur Démarrer la caméra.",
     errLiveChangeRefused:

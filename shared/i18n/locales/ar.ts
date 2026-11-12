@@ -183,6 +183,14 @@ export const messages: Messages = {
     errCameraGone:
       "هذه الكاميرا لم تعد متاحة — أعد ضبط الكاميرا إلى «تلقائي» ثم انقر «تشغيل الكاميرا».",
     errCamera: (message) => `الكاميرا: ${message}`,
+    startScreen: "مسح الشاشة",
+    errScreenDenied:
+      "لم يُسمح بالتقاط الشاشة — اختر نافذة أو شاشة (واسمح بتسجيل الشاشة إن طُلب ذلك) ثم حاول مرة أخرى.",
+    errScreen: (message) => `الشاشة: ${message}`,
+    screenEnded: "توقف التقاط الشاشة — ابدأ من جديد للمتابعة.",
+    screenSearching: (resolution) => `الشاشة ${resolution} — جارٍ البحث عن بث…`,
+    screenActual: (resolution, fps, workers) =>
+      `الشاشة ${resolution} @ ${fps} إطار/ث · عمال فك الترميز: ${workers}`,
     errRestartFailed: "الكاميرا: تعذّرت إعادة التشغيل بعد التبديل — انقر «تشغيل الكاميرا».",
     errLiveChangeRefused: "رفضت هذه الكاميرا تغييرًا أثناء التشغيل — أعد التشغيل لتطبيقه",
     cameraRefusedKeptPrevious: "رفضت تلك الكاميرا التشغيل — أُبقيَ على الكاميرا السابقة",

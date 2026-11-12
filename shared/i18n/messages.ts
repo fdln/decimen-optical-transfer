@@ -205,6 +205,16 @@ export interface Messages {
     errPermissionDenied: string;
     errCameraGone: string;
     errCamera: (message: string) => string; // "camera: …"
+    /** Screen source — the receiver reading a captured window or screen
+     *  (getDisplayMedia) instead of a camera. Desktop only. */
+    startScreen: string; // "Scan screen"
+    errScreenDenied: string;
+    errScreen: (message: string) => string; // "screen: …"
+    /** The user ended the capture from the OS/browser controls. */
+    screenEnded: string;
+    screenSearching: (resolution: string) => string;
+    /** The "applied settings" line while the source is a screen. */
+    screenActual: (resolution: string, fps: string, workers: number) => string;
     errRestartFailed: string;
     errLiveChangeRefused: string;
     cameraRefusedKeptPrevious: string;

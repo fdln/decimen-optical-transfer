@@ -178,6 +178,14 @@ export const messages: Messages = {
     errPermissionDenied: "摄像头权限被拒绝——请先允许，然后再次点按“启动摄像头”。",
     errCameraGone: "该摄像头已不可用——请把摄像头设回“自动”，再点按“启动摄像头”。",
     errCamera: (message) => `摄像头：${message}`,
+    startScreen: "扫描屏幕",
+    errScreenDenied:
+      "屏幕捕获未获允许——请选择一个窗口或屏幕（如有提示，请允许屏幕录制），然后重试。",
+    errScreen: (message) => `屏幕：${message}`,
+    screenEnded: "屏幕捕获已停止——请重新开始以继续。",
+    screenSearching: (resolution) => `屏幕 ${resolution}，正在搜索数据流…`,
+    screenActual: (resolution, fps, workers) =>
+      `屏幕 ${resolution} @ ${fps} fps · 解码线程：${workers}`,
     errRestartFailed: "摄像头：切换后无法重新启动——请点按“启动摄像头”。",
     errLiveChangeRefused: "此摄像头拒绝实时更改——重新启动后生效",
     cameraRefusedKeptPrevious: "该摄像头无法启动——已保留之前的摄像头",

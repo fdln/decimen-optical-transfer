@@ -61,4 +61,10 @@ path, released separately as
 artifacts self-identify (banner + `version()`/`build()` exports); licensing
 in `NOTICE.md` alongside them.
 
+## Desktop shell (`src-tauri/`)
+
+A Tauri v2 wrapper that loads the same pages from a `tauri`-mode build
+(`dist-tauri/`, no service worker). It adds external-link and download
+handling in Rust and nothing else — see [Desktop app](desktop.md).
+
 Typechecking: `tsconfig.json` covers the pages and `shared/`; `tsconfig.node.json` covers `build/` and `vite.config.ts` (both run in `npm run build`).

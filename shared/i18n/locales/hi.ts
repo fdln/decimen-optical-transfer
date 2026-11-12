@@ -184,6 +184,14 @@ export const messages: Messages = {
     errCameraGone:
       "वह कैमरा अब उपलब्ध नहीं है — कैमरा वापस ऑटो पर सेट करें और “कैमरा शुरू करें” दबाएँ।",
     errCamera: (message) => `कैमरा: ${message}`,
+    startScreen: "स्क्रीन स्कैन करें",
+    errScreenDenied:
+      "स्क्रीन कैप्चर की अनुमति नहीं मिली — कोई विंडो या स्क्रीन चुनें (और पूछे जाने पर स्क्रीन रिकॉर्डिंग की अनुमति दें), फिर दोबारा कोशिश करें।",
+    errScreen: (message) => `स्क्रीन: ${message}`,
+    screenEnded: "स्क्रीन कैप्चर रुक गया — जारी रखने के लिए दोबारा शुरू करें।",
+    screenSearching: (resolution) => `स्क्रीन ${resolution} — स्ट्रीम खोजी जा रही है…`,
+    screenActual: (resolution, fps, workers) =>
+      `स्क्रीन ${resolution} @ ${fps} fps · डिकोड वर्कर: ${workers}`,
     errRestartFailed: "कैमरा: स्विच के बाद दोबारा शुरू नहीं हो सका — “कैमरा शुरू करें” दबाएँ।",
     errLiveChangeRefused: "इस कैमरे ने लाइव बदलाव स्वीकार नहीं किया — लागू करने के लिए दोबारा शुरू करें",
     cameraRefusedKeptPrevious: "वह कैमरा शुरू नहीं हुआ — पिछला ही चालू रखा गया है",

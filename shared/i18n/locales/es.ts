@@ -187,6 +187,14 @@ export const messages: Messages = {
     errCameraGone:
       "esa cámara ya no está disponible — vuelva a poner cámara en auto y toque Iniciar cámara.",
     errCamera: (message) => `cámara: ${message}`,
+    startScreen: "Escanear pantalla",
+    errScreenDenied:
+      "no se permitió la captura de pantalla — elige una ventana o pantalla (y permite la grabación de pantalla si se solicita) y vuelve a intentarlo.",
+    errScreen: (message) => `pantalla: ${message}`,
+    screenEnded: "la captura de pantalla se detuvo — vuelve a iniciarla para continuar.",
+    screenSearching: (resolution) => `pantalla ${resolution} — buscando una transmisión…`,
+    screenActual: (resolution, fps, workers) =>
+      `pantalla ${resolution} a ${fps} fps · workers de decodificación: ${workers}`,
     errRestartFailed: "cámara: no se pudo reiniciar tras el cambio — toque Iniciar cámara.",
     errLiveChangeRefused: "esta cámara rechazó un cambio en vivo — reinicie para aplicarlo",
     cameraRefusedKeptPrevious: "esa cámara se negó a iniciar — se mantuvo la anterior",

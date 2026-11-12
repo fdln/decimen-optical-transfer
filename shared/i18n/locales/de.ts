@@ -189,6 +189,14 @@ export const messages: Messages = {
     errCameraGone:
       "diese Kamera ist nicht mehr verfügbar — stellen Sie Kamera auf auto zurück und tippen Sie auf „Kamera starten“.",
     errCamera: (message) => `Kamera: ${message}`,
+    startScreen: "Bildschirm scannen",
+    errScreenDenied:
+      "Bildschirmaufnahme wurde nicht erlaubt — wähle ein Fenster oder einen Bildschirm (und erlaube bei Nachfrage die Bildschirmaufnahme), dann versuche es erneut.",
+    errScreen: (message) => `Bildschirm: ${message}`,
+    screenEnded: "Bildschirmaufnahme beendet — zum Fortsetzen erneut starten.",
+    screenSearching: (resolution) => `Bildschirm ${resolution} — suche einen Stream…`,
+    screenActual: (resolution, fps, workers) =>
+      `Bildschirm ${resolution} @ ${fps} fps · Decode-Worker: ${workers}`,
     errRestartFailed:
       "Kamera: Neustart nach dem Wechsel fehlgeschlagen — tippen Sie auf „Kamera starten“.",
     errLiveChangeRefused:

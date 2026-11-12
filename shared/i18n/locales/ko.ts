@@ -185,6 +185,14 @@ export const messages: Messages = {
     errCameraGone:
       "해당 카메라를 더 이상 사용할 수 없습니다 — 카메라를 자동으로 되돌리고 카메라 시작을 누르세요.",
     errCamera: (message) => `카메라: ${message}`,
+    startScreen: "화면 스캔",
+    errScreenDenied:
+      "화면 캡처가 허용되지 않았습니다 — 창이나 화면을 선택하고(요청 시 화면 기록을 허용한 뒤) 다시 시도하세요.",
+    errScreen: (message) => `화면: ${message}`,
+    screenEnded: "화면 캡처가 중지되었습니다 — 계속하려면 다시 시작하세요.",
+    screenSearching: (resolution) => `화면 ${resolution} — 스트림 탐색 중…`,
+    screenActual: (resolution, fps, workers) =>
+      `화면 ${resolution} @ ${fps} fps · 디코드 워커: ${workers}`,
     errRestartFailed: "카메라: 전환 후 다시 시작하지 못했습니다 — 카메라 시작을 누르세요.",
     errLiveChangeRefused: "이 카메라가 실시간 변경을 거부했습니다 — 적용하려면 다시 시작하세요",
     cameraRefusedKeptPrevious: "해당 카메라가 시작을 거부했습니다 — 이전 카메라를 유지합니다",

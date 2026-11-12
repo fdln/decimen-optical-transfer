@@ -1,0 +1,67 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Decimen Optical Transfer",
+  "version": "../package.json",
+  "identifier": "com.wknd.decimen-optical-transfer",
+  "build": {
+    "frontendDist": "../dist-tauri",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev:tauri",
+    "beforeBuildCommand": "npm run build:tauri"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "create": false,
+        "title": "Decimen Optical Transfer",
+        "width": 1100,
+        "height": 820,
+        "minWidth": 380,
+        "minHeight": 560,
+        "resizable": true,
+        "backgroundColor": "#070a11"
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self' 'wasm-unsafe-eval' blob:",
+        "worker-src": "'self' blob:",
+        "connect-src": "'self' data: blob:",
+        "img-src": "'self' data: blob:",
+        "media-src": "'self' blob: mediastream:",
+        "style-src": "'self' 'unsafe-inline'",
+        "font-src": "'none'",
+        "form-action": "'none'"
+      },
+      "dangerousDisableAssetCspModification": ["style-src"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "license": "AGPL-3.0-or-later",
+    "licenseFile": "../LICENSE",
+    "copyright": "© 2026 Evan Crawley (Bash Alarmist)",
+    "homepage": "https://github.com/bashalarmistalt/decimen-optical-transfer",
+    "category": "Utility",
+    "shortDescription": "File transfer over animated QR codes — screen to camera, no network.",
+    "resources": {
+      "../LICENSE": "LICENSE",
+      "../NOTICE": "NOTICE",
+      "../vendor/decimen-codec/NOTICE.md": "decimen-codec-NOTICE.md"
+    },
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "entitlements": "Entitlements.plist"
+    }
+  }
+}

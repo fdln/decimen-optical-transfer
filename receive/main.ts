@@ -47,13 +47,14 @@ import {
 import { NO_SIGNAL_HINT_FRAME_BYTES, NO_SIGNAL_HINT_TX_FPS } from "../shared/send-settings";
 import { statusLine } from "../shared/status-line";
 import { requestScreenWakeLock } from "../shared/wake-lock";
-import { applyAdvancedConstraint, probeCameraCapabilities } from "../shared/platform";
+import { applyAdvancedConstraint, isAndroid, isIOS, probeCameraCapabilities } from "../shared/platform";
 import { closeOnBackdropClick } from "../shared/dialog";
 import { supportLink } from "./support";
 
 await initI18n();
 
 const startBtn = document.getElementById("start") as HTMLButtonElement;
+const screenBtn = document.getElementById("start-screen") as HTMLButtonElement;
 const video = document.getElementById("video") as HTMLVideoElement;
 const preview = document.getElementById("preview")!;
 const cameraBox = document.querySelector<HTMLDivElement>(".preview")!;
@@ -123,6 +124,15 @@ const NO_SIGNAL_DISMISSED_MS = 15_000;
 const STATS_WINDOW_MS = 2000;
 
 let stream: MediaStream | null = null;
+/** What feeds the <video>: a camera, or a captured window/screen. Everything
+ *  downstream of the element — capture loop, workers, fountain — is the same
+ *  for both; only acquisition and the camera-only settings differ. */
+type Source = "camera" | "screen";
+let source: Source = "camera";
+// Phones expose no usable getDisplayMedia (iOS has none; Android's captures
+// the receiver's own screen, which is the one thing not worth scanning).
+const canCaptureScreen =
+  typeof navigator.mediaDevices?.getDisplayMedia === "function" && !isIOS && !isAndroid;
 let decoder: LTDecoder | null = null;
 let streamKey = "";
 let reportSessionId = 0; // pairs this run with the sender's diagnostics post
@@ -374,7 +384,9 @@ function drawOverlay(now: number) {
   overlayCtx.globalAlpha = 1;
   overlayCtx.shadowBlur = 0;
 }
-startBtn.onclick = () => void start();
+startBtn.onclick = () => void start("camera");
+screenBtn.hidden = !canCaptureScreen;
+screenBtn.onclick = () => void start("screen");
 
 // The header nav markup is shared verbatim between both tool pages; each page
 // marks its own link. Optional because the standalone build swaps the nav for
@@ -449,6 +461,11 @@ function offerRetry(message: string) {
   startBtn.disabled = false;
   startBtn.style.display = "";
   startBtn.textContent = msg.receive.startCamera;
+  // "" hands visibility back to the `hidden` attribute, so the button stays
+  // away where the screen cannot be captured.
+  screenBtn.disabled = false;
+  screenBtn.style.display = "";
+  screenBtn.textContent = msg.receive.startScreen;
   preview.style.display = "none";
   metricsEl.style.display = "none";
   if (diagnosticsEl) diagnosticsEl.style.display = "none";
@@ -493,6 +510,42 @@ async function acquireCamera(selection: MediaTrackConstraints): Promise<MediaStr
 }
 
 /**
+ * A window or screen as the source. The OS/browser picker chooses what is
+ * captured — there is no region to configure here, because the decoder already
+ * finds the codes anywhere in the frame and crops to them itself. Width is
+ * left at whatever the surface is: a downscaled capture is exactly the lost
+ * module resolution a dense code cannot afford.
+ */
+function acquireScreen(): Promise<MediaStream> {
+  return navigator.mediaDevices.getDisplayMedia({
+    audio: false,
+    video: { frameRate: { ideal: Number(cfgCapFps.value) } },
+  });
+}
+
+/** Stopping the capture from the OS controls ends the track with no error and
+ *  no further frames. Decode state survives, like a failed camera switch: the
+ *  buttons come back and a restarted source resumes the same transfer. */
+function watchScreenEnd(captured: MediaStream) {
+  captured.getVideoTracks()[0]?.addEventListener("ended", () => {
+    if (done || stream !== captured) return;
+    stream = null;
+    video.srcObject = null;
+    captureGen++;
+    clearInterval(statsTimer);
+    statsTimer = undefined;
+    offerRetry(msg.receive.screenEnded);
+  });
+}
+
+/** "W×H" of the live source. Safari leaves a display track's settings blank
+ *  until frames flow, so the element's own size is the fallback. */
+function sourceResolution(): string {
+  const s = stream?.getVideoTracks()[0]?.getSettings();
+  return `${s?.width ?? video.videoWidth}×${s?.height ?? video.videoHeight}`;
+}
+
+/**
  * Fill the camera <select> with the device's actual cameras.
  *
  * Runs after every successful acquisition, not at page load: enumerateDevices
@@ -519,7 +572,7 @@ async function populateCameraOptions() {
   cfgCamera.value = cameras.some((d) => d.deviceId === chosen) ? chosen : "";
 }
 
-async function start() {
+async function start(kind: Source) {
   if (!navigator.mediaDevices?.getUserMedia) {
     // On insecure origins the API doesn't exist AT ALL — this is the plain-
     // http-over-LAN case. localhost is exempt; other hosts need https.
@@ -529,23 +582,33 @@ async function start() {
   // Nothing on the page changes until the camera is actually running: the
   // error paths below all have to leave a usable Start button behind.
   startBtn.disabled = true;
-  startBtn.textContent = msg.receive.starting;
+  screenBtn.disabled = true;
+  (kind === "screen" ? screenBtn : startBtn).textContent = msg.receive.starting;
   try {
-    stream = await acquireCamera(cameraSelection());
+    stream = kind === "screen" ? await acquireScreen() : await acquireCamera(cameraSelection());
   } catch (err) {
     const denied = err instanceof DOMException && err.name === "NotAllowedError";
     const gone = err instanceof DOMException && err.name === "OverconstrainedError";
+    const detail = err instanceof Error ? err.message : String(err);
+    // Dismissing the picker is also a NotAllowedError — one message covers
+    // both, since the way forward is the same.
     offerRetry(
-      denied
-        ? msg.receive.errPermissionDenied
-        : gone
-          ? msg.receive.errCameraGone
-          : msg.receive.errCamera(err instanceof Error ? err.message : String(err)),
+      kind === "screen"
+        ? denied
+          ? msg.receive.errScreenDenied
+          : msg.receive.errScreen(detail)
+        : denied
+          ? msg.receive.errPermissionDenied
+          : gone
+            ? msg.receive.errCameraGone
+            : msg.receive.errCamera(detail),
     );
     return;
   }
+  source = kind;
 
   startBtn.style.display = "none";
+  screenBtn.style.display = "none";
   // "": back to the stylesheet's flex — the zone centers the camera box.
   preview.style.display = "";
   metricsEl.style.display = "grid";
@@ -555,13 +618,22 @@ async function start() {
   syncPreviewAspect();
   const settings = stream.getVideoTracks()[0]?.getSettings();
   setStatus(
-    msg.receive.cameraSearching(`${settings?.width}×${settings?.height}@${settings?.frameRate}`),
+    source === "screen"
+      ? msg.receive.screenSearching(`${sourceResolution()}@${Math.round(settings?.frameRate ?? 0)}`)
+      : msg.receive.cameraSearching(`${settings?.width}×${settings?.height}@${settings?.frameRate}`),
   );
 
   pool.resize(Number(cfgWorkers.value));
   reportCameraSettings();
-  void applyCameraExtras();
-  void populateCameraOptions();
+  // Lens, capture width and camera fps describe a camera; a captured surface
+  // has none of them to change. Set both ways — a retry may switch source.
+  for (const el of [cfgCamera, cfgWidth, cfgCapFps]) el.disabled = source === "screen";
+  if (source === "screen") {
+    watchScreenEnd(stream);
+  } else {
+    void applyCameraExtras();
+    void populateCameraOptions();
+  }
   if (!settingsWired) {
     settingsWired = true;
     for (const el of [cfgWidth, cfgCapFps, cfgWorkers]) {
@@ -586,6 +658,14 @@ function reportCameraSettings() {
   const track = stream?.getVideoTracks()[0];
   if (!track) return;
   const s = track.getSettings();
+  if (source === "screen") {
+    cameraActual.textContent = msg.receive.screenActual(
+      sourceResolution(),
+      String(Math.round(s.frameRate ?? 0)),
+      pool.size,
+    );
+    return;
+  }
   const askedFps = Number(cfgCapFps.value);
   const gotFps = Math.round(s.frameRate ?? 0);
   cameraActual.textContent = msg.receive.cameraActual(
@@ -630,7 +710,7 @@ async function applyCameraExtras() {
  * element, not the stream, so the capture loop survives the swap).
  */
 async function switchCamera() {
-  if (done || !stream) return;
+  if (done || !stream || source !== "camera") return;
   cfgCamera.disabled = true; // one switch at a time
   const previous = stream.getVideoTracks()[0]?.getSettings().deviceId;
   for (const track of stream.getTracks()) track.stop();
@@ -677,6 +757,11 @@ async function applyReceiveSettings() {
   pool.resize(Number(cfgWorkers.value));
   const track = stream?.getVideoTracks()[0];
   if (!track) return;
+  if (source === "screen") {
+    // Only the worker count applies to a captured surface.
+    reportCameraSettings();
+    return;
+  }
   const width = Number(cfgWidth.value);
   try {
     await track.applyConstraints({

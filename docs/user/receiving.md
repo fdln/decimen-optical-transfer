@@ -6,6 +6,18 @@ Fill the camera view with the code and prop the phone against something — auto
 
 Progress counts **frames collected**, not blocks solved — fountain decoding back-loads its solve cascade, so the bar is estimated from frame rate and only verified completion reaches 100%.
 
+## Scanning a screen instead of a camera
+
+On a desktop browser (and in the desktop app) a second button, **Scan
+screen**, reads the stream from a captured window or screen instead of a
+camera — for a sender running in another window on the same machine, or
+shown in a video call or a recording. The system's own picker chooses what
+is captured; there is no region to draw, because the decoder finds the codes
+anywhere in the frame. The camera, capture width and capture fps settings do
+not apply to a captured surface and are disabled while it is the source.
+Stopping the capture from the system controls brings the buttons back, and
+starting again resumes the same transfer.
+
 ## When it lands
 
 - The file is verified against its SHA-256 before anything is offered.

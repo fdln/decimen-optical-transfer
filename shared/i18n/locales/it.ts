@@ -190,6 +190,14 @@ export const messages: Messages = {
     errCameraGone:
       "quella fotocamera non è più disponibile: riporta fotocamera su auto e tocca Avvia fotocamera.",
     errCamera: (message) => `fotocamera: ${message}`,
+    startScreen: "Scansiona schermo",
+    errScreenDenied:
+      "la cattura dello schermo non è stata consentita — scegli una finestra o uno schermo (e consenti la registrazione dello schermo se richiesto), poi riprova.",
+    errScreen: (message) => `schermo: ${message}`,
+    screenEnded: "la cattura dello schermo si è interrotta — riavviala per continuare.",
+    screenSearching: (resolution) => `schermo ${resolution} — in cerca di un flusso…`,
+    screenActual: (resolution, fps, workers) =>
+      `schermo ${resolution} a ${fps} fps · worker di decodifica: ${workers}`,
     errRestartFailed:
       "fotocamera: impossibile riavviarla dopo il cambio — tocca Avvia fotocamera.",
     errLiveChangeRefused:

@@ -190,6 +190,14 @@ export const messages: Messages = {
     errCameraGone:
       "эта камера больше недоступна — верните настройку «камера» на «авто» и нажмите «Включить камеру».",
     errCamera: (message) => `камера: ${message}`,
+    startScreen: "Сканировать экран",
+    errScreenDenied:
+      "захват экрана не разрешён — выберите окно или экран (и разрешите запись экрана, если появится запрос), затем повторите попытку.",
+    errScreen: (message) => `экран: ${message}`,
+    screenEnded: "захват экрана остановлен — запустите его снова, чтобы продолжить.",
+    screenSearching: (resolution) => `экран ${resolution} — поиск потока…`,
+    screenActual: (resolution, fps, workers) =>
+      `экран ${resolution} @ ${fps} кадр/с · потоков декодирования: ${workers}`,
     errRestartFailed:
       "камера: не перезапустилась после переключения — нажмите «Включить камеру».",
     errLiveChangeRefused: "эта камера не приняла изменение на лету — перезапустите, чтобы применить",

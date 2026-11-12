@@ -186,6 +186,14 @@ export const messages: Messages = {
     errCameraGone:
       "そのカメラは利用できなくなりました。カメラを「自動」に戻して「カメラを開始」をタップしてください。",
     errCamera: (message) => `カメラ: ${message}`,
+    startScreen: "画面をスキャン",
+    errScreenDenied:
+      "画面キャプチャが許可されませんでした — ウインドウまたは画面を選び(求められたら画面収録を許可して)、もう一度お試しください。",
+    errScreen: (message) => `画面: ${message}`,
+    screenEnded: "画面キャプチャが停止しました — 続けるにはもう一度開始してください。",
+    screenSearching: (resolution) => `画面 ${resolution} — ストリームを探しています…`,
+    screenActual: (resolution, fps, workers) =>
+      `画面 ${resolution} @ ${fps} fps · デコードワーカー: ${workers}`,
     errRestartFailed:
       "カメラ: 切り替え後に再起動できませんでした。「カメラを開始」をタップしてください。",
     errLiveChangeRefused:

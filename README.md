@@ -66,6 +66,7 @@ the full diagnostics run report that produced it
 [protocol](docs/technical/protocol.md) ·
 [platform quirks](docs/technical/platform-quirks.md) ·
 [build & release](docs/technical/build-and-release.md) ·
+[desktop app](docs/technical/desktop.md) ·
 [localization](docs/technical/localization.md)
 
 The short version of the protocol: a screen-to-camera link has no
@@ -88,6 +89,7 @@ npm test                  # golden wire-format vectors and unit tests
 npm run build             # the hosted site → dist/
 npm run build:standalone  # both self-contained pages → dist-standalone/
 npm run build:all         # everything
+npm run tauri build       # the desktop app (Tauri; needs Rust) → src-tauri/target/
 ```
 
 Open `https://localhost:5173/send/` on the sending device and the printed
